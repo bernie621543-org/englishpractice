@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EngDict 英文拼字練習</title>
+  <script src="vocab.js"></script>
+  <style>
+    :root {
+      --primary: #1b65b8;
+      --primary-dark: #134a8a;
+      --accent: #ff6b00;
+      --accent-hover: #e05e00;
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #d97706;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 0 28px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand { font-size: 1.4rem; font-weight: 800; letter-spacing: 0.3px; }
+    .brand span { color: #ffd166; }
+
+    nav { display: flex; gap: 8px; }
+    nav button {
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.88);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.96rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    nav button:hover, nav button.active { background: rgba(255,255,255,0.2); color: #fff; }
+
+    .container { max-width: 1080px; margin: 28px auto; padding: 0 22px; }
+
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 26px;
+      box-shadow: 0 2px 12px rgba(15,23,42,0.05);
+      border: 1px solid var(--border);
+      margin-bottom: 22px;
+    }
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 9px 16px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      font-size: 0.94rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.15s;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-accent { background: var(--accent); color: white; }
+    .btn-accent:hover { background: var(--accent-hover); }
+    .btn-outline { background: white; border: 1px solid #cbd5e1; color: var(--text); }
+    .btn-outline:hover { background: #f8fafc; }
+    .btn-danger { background: #fee2e2; color: var(--danger); }
+    .btn-danger:hover { background: #fecaca; }
+    .btn-sm { padding: 6px 12px; font-size: 0.84rem; border-radius: 7px; }
+
+    input, select {
+      padding: 9px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      background: #fff;
+    }
+    input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,101,184,0.14); }
+
+    .quiz-box {
+      text-align: center;
+      padding: 44px 36px;
+      min-height: 490px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .quiz-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .quiz-progress { font-size: 0.96rem; color: var(--muted); font-weight: 600; }
+
+    .quiz-hint-badge {
+      display: inline-block;
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 10px 28px;
+      border-radius: 24px;
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      font-variant-numeric: tabular-nums;
+      margin-bottom: 16px;
+    }
+
+    .custom-zh-banner {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff7ed;
+      border: 1.5px solid #fb923c;
+      color: #9a3412;
+      padding: 6px 18px;
+      border-radius: 999px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin: 4px auto 10px;
+      box-shadow: 0 2px 6px rgba(251, 146, 60, 0.16);
+    }
+    .custom-zh-badge {
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.76rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .quiz-prompt {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 8px auto 6px;
+      max-width: 880px;
+    }
+    .quiz-en-sub {
+      font-size: 0.96rem;
+      color: var(--muted);
+      margin: 0 auto 18px;
+      max-width: 820px;
+      min-height: 22px;
+    }
+
+    .spell-input {
+      width: 100%;
+      max-width: 620px;
+      height: 68px;
+      margin: 0 auto 16px;
+      display: block;
+      font-size: 1.85rem;
+      text-align: center;
+      letter-spacing: 2.5px;
+      padding: 12px 20px;
+      border: 2px solid #94a3b8;
+      border-radius: 12px;
+      font-weight: 700;
+      transition: 0.15s;
+    }
+    .spell-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(27,101,184,0.15);
+    }
+    .spell-input.correct { border-color: var(--success); background: #f0fdf4; color: var(--success); }
+    .spell-input.near { border-color: var(--warning); background: #fffbeb; color: var(--warning); }
+    .spell-input.wrong { border-color: var(--danger); background: #fef2f2; color: var(--danger); }
+
+    .feedback-msg { font-size: 1.15rem; font-weight: 700; min-height: 30px; margin-bottom: 14px; }
+    .shortcut-bar { font-size: 0.9rem; color: var(--muted); margin-bottom: 18px; }
+    kbd {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+      padding: 2px 7px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.84rem;
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    .cat-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+    }
+    .add-row { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .add-row input[type="text"] { flex: 1; min-width: 240px; }
+
+    .csv-strip {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #fcfcfd;
+      border: 1px dashed #cbd5e1;
+      padding: 10px 14px;
+      border-radius: 9px;
+      font-size: 0.9rem;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 10px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.94rem; vertical-align: middle; }
+    th { background: #f8fafc; font-size: 0.86rem; color: var(--muted); font-weight: 700; }
+    tr:hover { background: #f8fafc; }
+
+    .custom-zh-input {
+      width: 100%;
+      min-width: 160px;
+      padding: 6px 10px;
+      font-size: 0.88rem;
+      border-radius: 6px;
+    }
+
+    .stage-tag {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+    }
+    .stage-0 { background: #fee2e2; color: #b91c1c; }
+    .stage-1 { background: #fef3c7; color: #b45309; }
+    .stage-2 { background: #dcfce7; color: #15803d; }
+
+    .note-tip { font-size: 0.84rem; color: var(--muted); }
+    .hidden { display: none !important; }
+    @media (max-width: 720px) {
+      .quiz-box { padding: 28px 18px; min-height: 420px; }
+      .spell-input { height: 58px; font-size: 1.45rem; }
+      .quiz-prompt { font-size: 1.4rem; }
+      .quiz-hint-badge { font-size: 1.4rem; padding: 8px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">Eng<span>Dict</span> 英文拼字練習</div>
+  <nav>
+    <button id="nav-quiz" class="active" onclick="switchTab('quiz')">拼字測驗</button>
+    <button id="nav-manage" onclick="switchTab('manage')">單字管理 (<span id="word-count">0</span>)</button>
+  </nav>
+</header>
+
+<div class="container">
+
+  <!-- ==================== 拼字測驗 ==================== -->
+  <div id="tab-quiz" class="card quiz-box">
+    <div class="quiz-top">
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <select id="quiz-cat-select" onchange="startQuiz()" style="padding:7px 12px; font-size:0.92rem; font-weight:600;">
+          <option value="__ALL__">全部分類</option>
+        </select>
+        <select id="quiz-stage-select" onchange="startQuiz()" style="padding:7px 10px; font-size:0.9rem;">
+          <option value="all">隨機穿插（全部）</option>
+          <option value="0">陌生</option>
+          <option value="1">模糊</option>
+          <option value="2">熟練</option>
+        </select>
+        <button class="btn btn-outline btn-sm" onclick="startQuiz()">🔀 重新洗牌</button>
+        <select id="accent-select" style="padding:7px 10px; font-size:0.9rem;">
+          <option value="en-US">美式發音 (en-US)</option>
+          <option value="en-GB">英式發音 (en-GB)</option>
+        </select>
+      </div>
+      <div class="quiz-progress" id="quiz-progress">載入中...</div>
+    </div>
+
+    <div id="quiz-content">
+      <div class="quiz-hint-badge" id="q-hint">[...]</div>
+      <div>
+        <div id="q-custom-banner" class="custom-zh-banner hidden">
+          <span class="custom-zh-badge">自訂</span>
+          <span id="q-custom-text"></span>
+        </div>
+      </div>
+      <div class="quiz-prompt" id="q-zh">準備出題中...</div>
+      <div class="quiz-en-sub" id="q-en-def"></div>
+
+      <input type="text" id="spell-input" class="spell-input" placeholder="按 / 開啟輸入格並輸入拼字..." autocomplete="off" spellcheck="false" />
+      <div class="feedback-msg" id="feedback-msg"></div>
+
+      <div class="shortcut-bar" id="shortcut-tip">
+        快捷鍵：<kbd>/</kbd> 開啟輸入格 ・ <kbd>Tab</kbd> 多給 1 個字母提示 ・ <kbd>Enter</kbd> 送出拼字（送出後才發音）
+      </div>
+
+      <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+        <button id="btn-submit" class="btn btn-accent" onclick="checkAnswer()">送出拼字 (Enter)</button>
+        <button id="btn-speak-after" class="btn btn-outline hidden" onclick="speakCurrent()">🔊 聽發音 (Tab)</button>
+        <button id="btn-next" class="btn btn-primary hidden" onclick="nextQuestion()">下一題 (Enter)</button>
+        <button id="btn-reveal" class="btn btn-outline" onclick="revealAnswer()">看解答</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 單字與分類管理 ==================== -->
+  <div id="tab-manage" class="hidden">
+    <div class="card">
+      <div class="section-title">
+        <span>單字與分類</span>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-outline btn-sm" onclick="downloadVocabJS()">匯出 vocab.js</button>
+        </div>
+      </div>
+
+      <div class="cat-bar">
+        <span style="font-weight:700; font-size:0.94rem;">分類：</span>
+        <select id="manage-cat-select" onchange="onManageCatChange()" style="min-width:170px; font-weight:600;"></select>
+        <button class="btn btn-primary btn-sm" onclick="createCategory()">＋ 新增分類</button>
+        <button class="btn btn-outline btn-sm" onclick="renameCategory()">重新命名</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCategory()">刪除分類</button>
+      </div>
+
+      <div class="add-row">
+        <input type="text" id="new-word-input" placeholder="輸入英文單字（自動去重，如：resilient, candid）" onkeydown="if(event.key==='Enter') addWords()" />
+        <button class="btn btn-accent" onclick="addWords()">＋ 新增單字</button>
+      </div>
+
+      <div class="csv-strip">
+        <div>
+          <strong>匯入 CSV 到「<span id="csv-target-cat-name"></span>」</strong>
+          <span class="note-tip">（自動去重；若有中文會自動填入自訂翻譯並存進 <code>vocab.js</code>）</span>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <input type="file" id="csv-file-input" accept=".csv,.txt" onchange="handleCSVUpload(event)" style="padding:4px 8px; font-size:0.84rem;" />
+          <label style="font-size:0.84rem; display:flex; align-items:center; gap:4px; cursor:pointer;">
+            <input type="checkbox" id="csv-replace-mode" /> 覆蓋此分類
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">
+        <span>「<span id="list-cat-title"></span>」單字清單（<span id="cat-word-count">0</span> 字）</span>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="text" id="filter-input" placeholder="篩選單字或自訂翻譯..." oninput="renderWordList()" style="padding:6px 12px; font-size:0.9rem;" />
+          <button class="btn btn-danger btn-sm" onclick="deleteSelectedWords()">刪除勾選</button>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:38px;"><input type="checkbox" id="check-all" onclick="toggleAllChecks(this)" /></th>
+            <th style="width:160px;">英文單字</th>
+            <th>自訂翻譯（存於 vocab.js）</th>
+            <th style="width:110px;">狀態</th>
+            <th style="width:80px;">操作</th>
+          </tr>
+        </thead>
+        <tbody id="word-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // index.html 為純空殼：不寫死任何單字或註釋，全部從 vocab.js 載入
+  const GH_SYNC_CONFIG = {
+    enabled: false,
+    owner: "",
+    repo: "",
+    branch: "main",
+    filePath: "vocab.js"
+  };
+
+  const STAGE_KEY = 'engdict_stage_v1';
+  const GH_TOKEN_STORAGE_KEY = 'engdict_gh_pat_v1';
+  const ONLINE_CACHE = new Map();
+  const IN_FLIGHT_CACHE = new Map();
+
+  const STAGE_LABELS = ['陌生', '模糊', '熟練'];
+
+  let categories = {};
+  let customZhMap = {};
+  let stageMap = {};
+  let activeManageCat = '';
+  let queue = [];
+  let qIndex = 0;
+  let currentMeta = null;
+  let hintCount = 1;
+  let answered = false;
+  let nearRetryUsed = false;
+  let ghSyncTimer = null;
+
+  const POS_SHORT = {
+    noun: 'n.',
+    verb: 'v.',
+    adjective: 'adj.',
+    adverb: 'adv.',
+    preposition: 'prep.',
+    conjunction: 'conj.',
+    pronoun: 'pron.',
+    interjection: 'interj.'
+  };
+
+  const HEADER_STOPWORDS = new Set([
+    'word', 'words', 'vocab', 'vocabulary', 'pos', 'part', 'speech',
+    'meaning', 'definition', 'chinese', 'zh', 'en', 'english', 'example'
+  ]);
+
+  function getStage(word) {
+    const s = stageMap[word];
+    return (s === 1 || s === 2) ? s : 0;
+  }
+
+  function setStage(word, nextStage) {
+    const clamped = Math.max(0, Math.min(2, nextStage));
+    stageMap[word] = clamped;
+    localStorage.setItem(STAGE_KEY, JSON.stringify(stageMap));
+    return clamped;
+  }
+
+  function promoteStage(word) {
+    return setStage(word, getStage(word) + 1);
+  }
+
+  function demoteStage(word) {
+    return setStage(word, getStage(word) - 1);
+  }
+
+  function cycleStageManual(word) {
+    const next = (getStage(word) + 1) % 3;
+    setStage(word, next);
+    renderWordList();
+  }
+
+  function getTotalUniqueWordCount() {
+    const all = new Set();
+    Object.values(categories).forEach(arr => arr.forEach(w => all.add(w)));
+    return all.size;
+  }
+
+  // 所有資料統一輸出成 vocab.js 格式
+  function buildVocabFileContent() {
+    const activeWords = new Set();
+    Object.values(categories).forEach(arr => arr.forEach(w => activeWords.add(w)));
+    const filteredCustom = {};
+    for (const [w, zh] of Object.entries(customZhMap)) {
+      if (activeWords.has(w) && String(zh).trim()) {
+        filteredCustom[w] = String(zh).trim();
+      }
+    }
+    return [
+      '// vocab.js - 唯一資料檔（index.html 為純空殼，不存資料）',
+      `const VOCAB_CATEGORIES = ${JSON.stringify(categories, null, 2)};`,
+      `const VOCAB_CUSTOM_ZH = ${JSON.stringify(filteredCustom, null, 2)};`,
+      ''
+    ].join('\n');
+  }
+
+  function toBase64UTF8(str) {
+    const bytes = new TextEncoder().encode(str);
+    let bin = '';
+    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin);
+  }
+
+  function scheduleBackgroundGitHubSync() {
+    if (!GH_SYNC_CONFIG.enabled || !GH_SYNC_CONFIG.owner || !GH_SYNC_CONFIG.repo) return;
+    clearTimeout(ghSyncTimer);
+    ghSyncTimer = setTimeout(() => {
+      syncVocabToGitHubBackground();
+    }, 1500);
+  }
+
+  async function syncVocabToGitHubBackground() {
+    let token = localStorage.getItem(GH_TOKEN_STORAGE_KEY) || '';
+    if (!token) {
+      const entered = prompt('請輸入此 Repo 的 GitHub Fine-grained PAT（僅存本機瀏覽器）：');
+      if (!entered || !entered.trim()) return;
+      token = entered.trim();
+      localStorage.setItem(GH_TOKEN_STORAGE_KEY, token);
+    }
+
+    const apiUrl = `https://api.github.com/repos/${encodeURIComponent(GH_SYNC_CONFIG.owner)}/${encodeURIComponent(GH_SYNC_CONFIG.repo)}/contents/${encodeURIComponent(GH_SYNC_CONFIG.filePath)}`;
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+
+    try {
+      let sha = undefined;
+      const getRes = await fetch(`${apiUrl}?ref=${encodeURIComponent(GH_SYNC_CONFIG.branch)}`, { headers });
+      if (getRes.ok) {
+        const meta = await getRes.json();
+        sha = meta.sha;
+      } else if (getRes.status !== 404) {
+        return;
+      }
+
+      const body = {
+        message: `Update ${GH_SYNC_CONFIG.filePath} (${getTotalUniqueWordCount()} words)`,
+        content: toBase64UTF8(buildVocabFileContent()),
+        branch: GH_SYNC_CONFIG.branch
+      };
+      if (sha) body.sha = sha;
+
+      await fetch(apiUrl, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(body)
+      });
+    } catch (_) {}
+  }
+
+  function normalizeCategories(rawObj) {
+    const clean = {};
+    for (const [catName, list] of Object.entries(rawObj || {})) {
+      const name = String(catName).trim();
+      if (!name || !Array.isArray(list)) continue;
+      clean[name] = [...new Set(list.map(w => String(w).trim().toLowerCase()).filter(Boolean))];
+    }
+    if (Object.keys(clean).length === 0) clean['未命名分類'] = [];
+    return clean;
+  }
+
+  // 直接從外部 vocab.js 讀取資料，不在 index.html 寫死預設值
+  function initFromVocabFile() {
+    categories = (typeof VOCAB_CATEGORIES !== 'undefined' && typeof VOCAB_CATEGORIES === 'object')
+      ? normalizeCategories(VOCAB_CATEGORIES)
+      : { '未命名分類': [] };
+
+    customZhMap = (typeof VOCAB_CUSTOM_ZH !== 'undefined' && typeof VOCAB_CUSTOM_ZH === 'object')
+      ? { ...VOCAB_CUSTOM_ZH }
+      : {};
+
+    try {
+      stageMap = JSON.parse(localStorage.getItem(STAGE_KEY) || '{}');
+    } catch (_) {
+      stageMap = {};
+    }
+
+    const keys = Object.keys(categories);
+    if (!categories[activeManageCat]) activeManageCat = keys[0];
+    refreshCategoryDropdowns();
+    updateTotalCountBadge();
+  }
+
+  function onDataChanged() {
+    categories = normalizeCategories(categories);
+    const keys = Object.keys(categories);
+    if (!categories[activeManageCat]) activeManageCat = keys[0];
+    refreshCategoryDropdowns();
+    updateTotalCountBadge();
+    scheduleBackgroundGitHubSync();
+  }
+
+  function updateTotalCountBadge() {
+    document.getElementById('word-count').textContent = getTotalUniqueWordCount();
+  }
+
+  function refreshCategoryDropdowns() {
+    const catNames = Object.keys(categories);
+    const quizSel = document.getElementById('quiz-cat-select');
+    const prevQuizVal = quizSel.value;
+    quizSel.innerHTML =
+      `<option value="__ALL__">全部分類 (${getTotalUniqueWordCount()} 字)</option>` +
+      catNames.map(c => `<option value="${c}">${c} (${categories[c].length} 字)</option>`).join('');
+    if (prevQuizVal === '__ALL__' || categories[prevQuizVal]) quizSel.value = prevQuizVal;
+
+    const manageSel = document.getElementById('manage-cat-select');
+    manageSel.innerHTML = catNames
+      .map(c => `<option value="${c}">${c} (${categories[c].length} 字)</option>`)
+      .join('');
+    manageSel.value = activeManageCat;
+
+    document.getElementById('csv-target-cat-name').textContent = activeManageCat;
+    document.getElementById('list-cat-title').textContent = activeManageCat;
+  }
+
+  function onManageCatChange() {
+    activeManageCat = document.getElementById('manage-cat-select').value;
+    document.getElementById('csv-target-cat-name').textContent = activeManageCat;
+    document.getElementById('list-cat-title').textContent = activeManageCat;
+    document.getElementById('check-all').checked = false;
+    renderWordList();
+  }
+
+  function createCategory() {
+    const name = prompt('請輸入新分類名稱：');
+    if (!name) return;
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    if (categories[trimmed]) {
+      activeManageCat = trimmed;
+      refreshCategoryDropdowns();
+      renderWordList();
+      return;
+    }
+    categories[trimmed] = [];
+    activeManageCat = trimmed;
+    onDataChanged();
+    renderWordList();
+  }
+
+  function renameCategory() {
+    const newName = prompt(`將「${activeManageCat}」重新命名為：`, activeManageCat);
+    if (!newName) return;
+    const trimmed = newName.trim();
+    if (!trimmed || trimmed === activeManageCat) return;
+    if (categories[trimmed]) return alert('已有同名分類！');
+    const nextCats = {};
+    for (const [k, v] of Object.entries(categories)) {
+      nextCats[k === activeManageCat ? trimmed : k] = v;
+    }
+    categories = nextCats;
+    activeManageCat = trimmed;
+    onDataChanged();
+    renderWordList();
+  }
+
+  function deleteCategory() {
+    const keys = Object.keys(categories);
+    if (keys.length <= 1) return alert('至少需要保留一個分類！');
+    if (!confirm(`確定要刪除「${activeManageCat}」分類嗎？`)) return;
+    delete categories[activeManageCat];
+    activeManageCat = Object.keys(categories)[0];
+    onDataChanged();
+    renderWordList();
+  }
+
+  function switchTab(tab) {
+    document.getElementById('tab-quiz').classList.toggle('hidden', tab !== 'quiz');
+    document.getElementById('tab-manage').classList.toggle('hidden', tab !== 'manage');
+    document.getElementById('nav-quiz').classList.toggle('active', tab === 'quiz');
+    document.getElementById('nav-manage').classList.toggle('active', tab === 'manage');
+    if (tab === 'manage') renderWordList();
+    if (tab === 'quiz') {
+      document.getElementById('spell-input').focus();
+      if (queue.length === 0) startQuiz();
+    }
+  }
+
+  // 解析單行 CSV：拆出英文單字與中文釋義（若有）
+  function splitCSVRow(line) {
+    const cols = [];
+    let cur = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        inQuotes = !inQuotes;
+      } else if ((ch === ',' || ch === ';') && !inQuotes) {
+        cols.push(cur.trim());
+        cur = '';
+      } else {
+        cur += ch;
+      }
+    }
+    cols.push(cur.trim());
+    return cols;
+  }
+
+  function parseCSVEntries(text) {
+    const lines = String(text || '').split(/\r?\n/);
+    const entries = []; // { word, zh }
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      const cols = splitCSVRow(line);
+      let word = '';
+      let zh = '';
+
+      for (const col of cols) {
+        if (!col) continue;
+        const zhMatch = col.match(/[\u4e00-\u9fff][^\n\r]*/);
+        if (zhMatch && !zh) {
+          zh = zhMatch[0].trim();
+        }
+        const engMatch = col.match(/[A-Za-z][A-Za-z'-]{0,40}/);
+        if (engMatch && !word) {
+          const candidate = engMatch[0].replace(/^['-]+|['-]+$/g, '').toLowerCase();
+          if (candidate && !HEADER_STOPWORDS.has(candidate)) {
+            word = candidate;
+          }
+        }
+      }
+
+      if (word) {
+        entries.push({ word, zh });
+      }
+    }
+    return entries;
+  }
+
+  // 全庫已存在的單字集合，確保絕不重複加入
+  function getAllExistingWordsSet(excludeCat = null) {
+    const set = new Set();
+    for (const [cat, list] of Object.entries(categories)) {
+      if (cat === excludeCat) continue;
+      for (const w of list) set.add(w);
+    }
+    return set;
+  }
+
+  function handleCSVUpload(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const replaceMode = document.getElementById('csv-replace-mode').checked;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const parsedEntries = parseCSVEntries(String(e.target?.result || ''));
+      if (parsedEntries.length === 0) {
+        alert('CSV 中沒有檢查到可用的英文單字！');
+        event.target.value = '';
+        return;
+      }
+
+      const otherCatsWords = getAllExistingWordsSet(replaceMode ? activeManageCat : null);
+      const currentList = replaceMode ? [] : [...(categories[activeManageCat] || [])];
+      const seenInTarget = new Set(currentList);
+
+      let addedCount = 0;
+      let zhAppliedCount = 0;
+
+      for (const { word, zh } of parsedEntries) {
+        if (!seenInTarget.has(word) && !otherCatsWords.has(word)) {
+          currentList.push(word);
+          seenInTarget.add(word);
+          addedCount++;
+        }
+        if (zh && !customZhMap[word]) {
+          customZhMap[word] = zh;
+          ONLINE_CACHE.delete(word);
+          zhAppliedCount++;
+        }
+      }
+
+      categories[activeManageCat] = currentList;
+      onDataChanged();
+      renderWordList();
+
+      alert(`已處理 CSV！新增 ${addedCount} 個不重複單字，自動填入 ${zhAppliedCount} 筆自訂中文（請匯出或同步 vocab.js 保存）。`);
+      event.target.value = '';
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  function addWords() {
+    const raw = document.getElementById('new-word-input').value.trim();
+    if (!raw) return;
+
+    const parts = raw.split(/[\s,，;；]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+    const allExisting = getAllExistingWordsSet(null);
+    const targetList = categories[activeManageCat] || [];
+
+    let addedCount = 0;
+    for (const p of parts) {
+      if (!allExisting.has(p)) {
+        targetList.push(p);
+        allExisting.add(p);
+        addedCount++;
+      }
+    }
+
+    categories[activeManageCat] = targetList;
+    onDataChanged();
+    document.getElementById('new-word-input').value = '';
+    renderWordList();
+
+    if (addedCount === 0) {
+      alert('輸入的單字已存在於單字庫，未重複加入。');
+    }
+  }
+
+  function saveCustomZh(word) {
+    const el = document.getElementById(`czh-${encodeURIComponent(word)}`);
+    if (!el) return;
+    const val = el.value.trim();
+    if (val) {
+      customZhMap[word] = val;
+    } else {
+      delete customZhMap[word];
+    }
+    ONLINE_CACHE.delete(word);
+    onDataChanged();
+  }
+
+  function deleteSingleWord(target) {
+    categories[activeManageCat] = (categories[activeManageCat] || []).filter(w => w !== target);
+    onDataChanged();
+    renderWordList();
+  }
+
+  function deleteSelectedWords() {
+    const checked = Array.from(document.querySelectorAll('.w-check:checked')).map(el => el.value);
+    if (checked.length === 0) return alert('請先勾選要刪除的單字');
+    const delSet = new Set(checked);
+    categories[activeManageCat] = (categories[activeManageCat] || []).filter(w => !delSet.has(w));
+    document.getElementById('check-all').checked = false;
+    onDataChanged();
+    renderWordList();
+  }
+
+  function toggleAllChecks(master) {
+    document.querySelectorAll('.w-check').forEach(cb => cb.checked = master.checked);
+  }
+
+  function downloadVocabJS() {
+    const blob = new Blob([buildVocabFileContent()], { type: 'application/javascript;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'vocab.js';
+    link.click();
+  }
+
+  function renderWordList() {
+    const kw = document.getElementById('filter-input').value.trim().toLowerCase();
+    const currentWords = categories[activeManageCat] || [];
+    document.getElementById('cat-word-count').textContent = currentWords.length;
+
+    const list = currentWords.filter(w =>
+      w.includes(kw) || (customZhMap[w] || '').toLowerCase().includes(kw)
+    );
+    const tbody = document.getElementById('word-tbody');
+    if (list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted); padding:24px;">此分類目前沒有符合的單字</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = list.map(w => {
+      const czh = customZhMap[w] || '';
+      const st = getStage(w);
+      const stLabel = STAGE_LABELS[st];
+      const escapedW = w.replace(/'/g, "\\'");
+      const escapedCzh = czh.replace(/"/g, '&quot;');
+
+      return `
+        <tr>
+          <td><input type="checkbox" class="w-check" value="${w}" /></td>
+          <td><strong>${w}</strong></td>
+          <td>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <input
+                type="text"
+                id="czh-${encodeURIComponent(w)}"
+                class="custom-zh-input"
+                value="${escapedCzh}"
+                placeholder="輸入自訂中文..."
+                onkeydown="if(event.key==='Enter') saveCustomZh('${escapedW}')"
+                onblur="saveCustomZh('${escapedW}')"
+              />
+              <button class="btn btn-outline btn-sm" onclick="saveCustomZh('${escapedW}')">存</button>
+            </div>
+          </td>
+          <td>
+            <span class="stage-tag stage-${st}" onclick="cycleStageManual('${escapedW}')" title="點擊切換狀態">${stLabel}</span>
+          </td>
+          <td><button class="btn btn-danger btn-sm" onclick="deleteSingleWord('${escapedW}')">刪除</button></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function editDistance(a, b) {
+    const m = a.length;
+    const n = b.length;
+    const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+    for (let i = 0; i <= m; i++) dp[i][0] = i;
+    for (let j = 0; j <= n; j++) dp[0][j] = j;
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        if (a[i - 1] === b[j - 1]) {
+          dp[i][j] = dp[i - 1][j - 1];
+        } else {
+          dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+        }
+      }
+    }
+    return dp[m][n];
+  }
+
+  function fetchWithTimeout(url, ms = 1800) {
+    const ctrl = new AbortController();
+    const id = setTimeout(() => ctrl.abort(), ms);
+    return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(id));
+  }
+
+  function cleanBriefZh(raw) {
+    return String(raw || '')
+      .replace(/["「」『』]/g, '')
+      .replace(/[。！!？?；;]+$/g, '')
+      .trim()
+      .slice(0, 32);
+  }
+
+  function hasChineseChar(str) {
+    return /[\u4e00-\u9fff]/.test(str || '');
+  }
+
+  async function queryDictEntry(word) {
+    try {
+      const res = await fetchWithTimeout(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`, 1600);
+      if (!res.ok) return { pos: '', shortDef: '' };
+      const entry = (await res.json())?.[0];
+      const rawPos = entry?.meanings?.[0]?.partOfSpeech || '';
+      const pos = POS_SHORT[rawPos] || rawPos || '';
+      const rawDef = entry?.meanings?.[0]?.definitions?.[0]?.definition || '';
+      const shortDef = rawDef.split(/[.!?](?:\s|$)/)[0].trim().slice(0, 100);
+      return { pos, shortDef };
+    } catch (_) {
+      return { pos: '', shortDef: '' };
+    }
+  }
+
+  async function translateCandidate(text, timeoutMs = 1500) {
+    if (!text) return '';
+    try {
+      const res = await fetchWithTimeout(
+        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|zh-TW`,
+        timeoutMs
+      );
+      if (res.ok) {
+        const json = await res.json();
+        const out = cleanBriefZh(json?.responseData?.translatedText || '');
+        if (out && !/MYMEMORY WARNING/i.test(out) && hasChineseChar(out)) return out;
+      }
+    } catch (_) {}
+
+    try {
+      const res = await fetchWithTimeout(
+        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh-TW&dt=t&q=${encodeURIComponent(text)}`,
+        timeoutMs
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const out = cleanBriefZh(data?.[0]?.[0]?.[0] || '');
+        if (out && hasChineseChar(out)) return out;
+      }
+    } catch (_) {}
+
+    return '';
+  }
+
+  async function fetchOnlineWordInfo(word, onPartialReady = null) {
+    const customZh = (customZhMap[word] || '').trim();
+    if (ONLINE_CACHE.has(word)) return ONLINE_CACHE.get(word);
+    if (IN_FLIGHT_CACHE.has(word)) return IN_FLIGHT_CACHE.get(word);
+
+    const task = (async () => {
+      const dict = await queryDictEntry(word);
+      const [defZh, wordZh] = await Promise.all([
+        translateCandidate(dict.shortDef, 1600),
+        translateCandidate(word, 1500)
+      ]);
+
+      const parts = [];
+      for (const item of [defZh, wordZh]) {
+        if (item && !parts.includes(item)) parts.push(item);
+      }
+
+      const displayZh = parts.join(' / ') || (customZh ? '' : (dict.shortDef || '請輸入拼字作答'));
+      const enSub = dict.shortDef && !defZh ? dict.shortDef : '';
+
+      const info = {
+        word,
+        pos: dict.pos,
+        customZh,
+        displayZh,
+        enSub
+      };
+
+      if (typeof onPartialReady === 'function') onPartialReady(info);
+
+      ONLINE_CACHE.set(word, info);
+      IN_FLIGHT_CACHE.delete(word);
+      return info;
+    })();
+
+    IN_FLIGHT_CACHE.set(word, task);
+    return task;
+  }
+
+  function prefetchUpcomingWords() {
+    for (let offset = 1; offset <= 2; offset++) {
+      const target = queue[qIndex + offset];
+      if (target && !ONLINE_CACHE.has(target) && !IN_FLIGHT_CACHE.has(target)) {
+        fetchOnlineWordInfo(target).catch(() => {});
+      }
+    }
+  }
+
+  function updateHintBadge() {
+    if (!currentMeta) return;
+    const w = currentMeta.word;
+    const shown = w.slice(0, Math.min(hintCount, w.length));
+    const suffix = hintCount < w.length ? '...' : '';
+    const posPart = currentMeta.pos ? ` ${currentMeta.pos}` : '';
+    document.getElementById('q-hint').textContent = `[${shown}${suffix}]${posPart}`;
+  }
+
+  function addOneLetterHint() {
+    if (!currentMeta || answered) return;
+    if (hintCount < currentMeta.word.length) {
+      hintCount++;
+      updateHintBadge();
+    }
+  }
+
+  function getSelectedQuizPool() {
+    const selectedCat = document.getElementById('quiz-cat-select').value;
+    const stageFilter = document.getElementById('quiz-stage-select').value;
+
+    let list = [];
+    if (selectedCat === '__ALL__') {
+      const all = new Set();
+      Object.values(categories).forEach(arr => arr.forEach(w => all.add(w)));
+      list = [...all];
+    } else {
+      list = [...(categories[selectedCat] || [])];
+    }
+
+    if (stageFilter !== 'all') {
+      const targetStage = Number(stageFilter);
+      return list.filter(w => getStage(w) === targetStage);
+    }
+    return list;
+  }
+
+  function startQuiz() {
+    const pool = getSelectedQuizPool();
+    if (pool.length === 0) {
+      queue = [];
+      document.getElementById('quiz-progress').textContent = '0 / 0';
+      document.getElementById('q-hint').textContent = '[...]';
+      document.getElementById('q-custom-banner').classList.add('hidden');
+      document.getElementById('q-zh').textContent = '此範圍目前沒有單字。';
+      document.getElementById('q-en-def').textContent = '';
+      return;
+    }
+    queue = pool.sort(() => Math.random() - 0.5);
+    qIndex = 0;
+    loadQuestion();
+  }
+
+  function renderMetaToUI(targetWord, info) {
+    if (queue[qIndex] !== targetWord) return;
+    currentMeta = info;
+    updateHintBadge();
+
+    const banner = document.getElementById('q-custom-banner');
+    const customText = document.getElementById('q-custom-text');
+    if (info.customZh) {
+      customText.textContent = info.customZh;
+      banner.classList.remove('hidden');
+    } else {
+      customText.textContent = '';
+      banner.classList.add('hidden');
+    }
+
+    document.getElementById('q-zh').textContent = info.displayZh;
+    document.getElementById('q-en-def').textContent = info.enSub || '';
+  }
+
+  async function loadQuestion() {
+    answered = false;
+    nearRetryUsed = false;
+    hintCount = 1;
+
+    const targetWord = queue[qIndex];
+    const presetCustom = (customZhMap[targetWord] || '').trim();
+    currentMeta = {
+      word: targetWord,
+      pos: '',
+      customZh: presetCustom,
+      displayZh: presetCustom ? '' : '查詢中...',
+      enSub: ''
+    };
+
+    document.getElementById('quiz-progress').textContent = `第 ${qIndex + 1} / ${queue.length} 題`;
+    document.getElementById('q-hint').textContent = `[${targetWord[0]}...]`;
+
+    const banner = document.getElementById('q-custom-banner');
+    const customText = document.getElementById('q-custom-text');
+    if (presetCustom) {
+      customText.textContent = presetCustom;
+      banner.classList.remove('hidden');
+    } else {
+      customText.textContent = '';
+      banner.classList.add('hidden');
+    }
+
+    document.getElementById('q-zh').textContent = currentMeta.displayZh;
+    document.getElementById('q-en-def').textContent = '';
+    document.getElementById('feedback-msg').textContent = '';
+    document.getElementById('shortcut-tip').innerHTML =
+      '快捷鍵：<kbd>/</kbd> 開啟輸入格 ・ <kbd>Tab</kbd> 多給 1 個字母提示 ・ <kbd>Enter</kbd> 送出拼字（送出後才發音）';
+
+    const input = document.getElementById('spell-input');
+    input.value = '';
+    input.className = 'spell-input';
+    input.disabled = false;
+    input.focus();
+
+    document.getElementById('btn-submit').classList.remove('hidden');
+    document.getElementById('btn-reveal').classList.remove('hidden');
+    document.getElementById('btn-speak-after').classList.add('hidden');
+    document.getElementById('btn-next').classList.add('hidden');
+
+    prefetchUpcomingWords();
+
+    if (ONLINE_CACHE.has(targetWord)) {
+      renderMetaToUI(targetWord, ONLINE_CACHE.get(targetWord));
+      return;
+    }
+
+    const info = await fetchOnlineWordInfo(targetWord, (partial) => {
+      renderMetaToUI(targetWord, partial);
+    });
+    renderMetaToUI(targetWord, info);
+  }
+
+  function enterPostAnswerState() {
+    answered = true;
+    document.getElementById('spell-input').disabled = true;
+    document.getElementById('btn-submit').classList.add('hidden');
+    document.getElementById('btn-reveal').classList.add('hidden');
+    document.getElementById('btn-speak-after').classList.remove('hidden');
+    document.getElementById('btn-next').classList.remove('hidden');
+    document.getElementById('shortcut-tip').innerHTML =
+      '已顯示結果：<kbd>Tab</kbd> 聽發音 ・ 再按一次 <kbd>Enter</kbd> 下一題';
+    speakCurrent();
+  }
+
+  function checkAnswer() {
+    if (answered || !currentMeta) return;
+    const input = document.getElementById('spell-input');
+    const guess = input.value.trim();
+    const fb = document.getElementById('feedback-msg');
+
+    if (!guess) {
+      const nextSt = demoteStage(currentMeta.word);
+      const stText = STAGE_LABELS[nextSt];
+      input.className = 'spell-input wrong';
+      fb.style.color = 'var(--danger)';
+      fb.textContent = `❌ 未輸入答案（算錯）！正解：${currentMeta.word}（${stText}）`;
+      enterPostAnswerState();
+      return;
+    }
+
+    const lowerGuess = guess.toLowerCase();
+    const lowerTarget = currentMeta.word.toLowerCase();
+
+    if (lowerGuess === lowerTarget) {
+      const nextSt = promoteStage(currentMeta.word);
+      const stText = STAGE_LABELS[nextSt];
+      input.className = 'spell-input correct';
+      fb.style.color = 'var(--success)';
+      fb.textContent = `✅ 正確！${currentMeta.word}（${stText}）`;
+      enterPostAnswerState();
+      return;
+    }
+
+    const dist = editDistance(lowerGuess, lowerTarget);
+    if (!nearRetryUsed && dist === 1) {
+      nearRetryUsed = true;
+      input.className = 'spell-input near';
+      input.value = '';
+      input.focus();
+      fb.style.color = 'var(--warning)';
+      fb.textContent = '⚡ 答案接近！只差 1 個字母，再試一次';
+      return;
+    }
+
+    const nextSt = demoteStage(currentMeta.word);
+    const stText = STAGE_LABELS[nextSt];
+    input.className = 'spell-input wrong';
+    fb.style.color = 'var(--danger)';
+    fb.textContent = `❌ 正解：${currentMeta.word}（${stText}）`;
+    enterPostAnswerState();
+  }
+
+  function revealAnswer() {
+    if (answered || !currentMeta) return;
+    const input = document.getElementById('spell-input');
+    input.value = currentMeta.word;
+
+    const nextSt = demoteStage(currentMeta.word);
+    const stText = STAGE_LABELS[nextSt];
+
+    const fb = document.getElementById('feedback-msg');
+    fb.style.color = 'var(--warning)';
+    fb.textContent = `正解：${currentMeta.word}（${stText}）`;
+
+    enterPostAnswerState();
+  }
+
+  function nextQuestion() {
+    qIndex++;
+    if (qIndex >= queue.length) {
+      alert('🎉 本輪拼字練習完成！將重新洗牌開始下一輪。');
+      startQuiz();
+    } else {
+      loadQuestion();
+    }
+  }
+
+  function speakCurrent() {
+    if (!currentMeta) return;
+    const lang = document.getElementById('accent-select').value || 'en-US';
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(currentMeta.word);
+    utter.lang = lang;
+    utter.rate = 0.95;
+    window.speechSynthesis.speak(utter);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (document.getElementById('tab-quiz').classList.contains('hidden')) return;
+
+    const input = document.getElementById('spell-input');
+
+    if (e.key === '/') {
+      e.preventDefault();
+      if (!answered && !input.disabled) input.focus();
+      return;
+    }
+
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      if (!answered) addOneLetterHint();
+      else speakCurrent();
+      return;
+    }
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (!answered) checkAnswer();
+      else nextQuestion();
+    }
+  });
+
+  initFromVocabFile();
+  startQuiz();
+</script>
+</body>
+</html>
